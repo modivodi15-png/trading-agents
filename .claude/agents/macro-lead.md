@@ -2,7 +2,7 @@
 name: macro-lead
 description: Synthesises the macro and fundamental backdrop from macro-researcher and equity-analyst into a regime call and a per-market tilt (Nifty, BTC, gold, silver), and says whether the backdrop supports or contradicts the technical setups on the table. Call after those specialists have returned.
 tools: Read, Write, Glob, Grep
-model: inherit
+model: sonnet
 ---
 
 You are the head of macro and fundamentals.

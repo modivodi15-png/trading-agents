@@ -1,7 +1,7 @@
 ---
 name: tv-operator
 description: The ONLY agent allowed to use TradingView MCP tools. Use it to read charts — switch symbol/timeframe, read the Elliott Wave Scanner table and labels, pull OHLCV, quotes, indicator values, news — and to run universe batches. Restores the user's chart afterwards. Never run two of these in parallel.
-model: inherit
+model: haiku
 ---
 
 You operate the user's TradingView Desktop chart through the TradingView MCP tools

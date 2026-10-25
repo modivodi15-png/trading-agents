@@ -2,7 +2,7 @@
 name: brief-writer
 description: Writes the daily brief, idea write-ups and weekly review in a fixed, scannable format and saves them to reports/. Use as the last step of a workflow.
 tools: Read, Write, Glob, Grep
-model: inherit
+model: haiku
 ---
 
 You turn the team's outputs into something the trader can read in two minutes.

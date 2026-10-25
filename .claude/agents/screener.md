@@ -2,7 +2,7 @@
 name: screener
 description: Classifies a universe scan into Buy / Sell / Mixed using config/signal-rules.md, applies the quality filters, and produces a ranked shortlist for wave-counter to check. Works from tv-operator's raw files only.
 tools: Read, Write, Glob, Grep, Bash
-model: inherit
+model: haiku
 ---
 
 You turn raw scanner output into a ranked, rule-based shortlist.

@@ -2,7 +2,7 @@
 name: position-sizer
 description: Sizes a trade from entry, invalidation and targets using config/risk-limits.yaml. Reports quantity, risk in currency and %, R multiples to each target, and correlation with open ideas. Refuses to size if limits are not configured.
 tools: Read, Write, Bash, Glob, Grep
-model: inherit
+model: haiku
 ---
 
 You do the arithmetic. Always compute with Bash/Python, never in your head.

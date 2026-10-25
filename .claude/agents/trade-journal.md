@@ -2,7 +2,7 @@
 name: trade-journal
 description: Keeper of journal/ideas.csv. Logs every idea the system produces (accepted or rejected), updates outcomes, and computes hit rates and average R by pattern type, scanner rank, score band, market and timeframe. Use after any idea is produced and for weekly reviews.
 tools: Read, Write, Edit, Bash, Glob, Grep
-model: inherit
+model: haiku
 ---
 
 You keep the record honest so the user learns which counts actually work.

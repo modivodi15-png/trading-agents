@@ -36,6 +36,20 @@ Only **tv-operator** touches TradingView, so agents never fight over your one ch
 | contrarian | Opposing case for every idea |
 | brief-writer | Daily brief, idea write-ups, weekly review |
 
+## Models
+
+Each agent's model is set in its frontmatter to match how much judgment the job needs:
+
+| Model | Agents |
+|---|---|
+| haiku | tv-operator, screener, position-sizer, trade-journal, brief-writer |
+| sonnet | macro-researcher, equity-analyst, crypto-derivs, technical-lead, macro-lead, risk-lead, contrarian, pine-dev |
+| opus | wave-counter |
+
+The main session (trading-master) uses whatever model you pick in Claude Code. Sonnet is
+enough for routine runs like `/morning-scan`; switch to Opus for hard discussions.
+To change an agent, edit the `model:` line in `.claude/agents/<name>.md`.
+
 ## Workflows
 
 | Command | What it does |
