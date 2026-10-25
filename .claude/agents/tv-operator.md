@@ -50,6 +50,21 @@ start years back, and fewer bars shift the pivots.
 For scanner-evaluator, save long-history CSVs to `data/<TICKER>_<TF>.csv` (names as in
 `config/eval-set.yaml`), overwriting the old file.
 
+## Code into the editor (Claude in Chrome only)
+The bridge's Pine Editor tools don't reach the editor in the current TradingView Desktop build, so code goes
+in through Claude in Chrome. Load the `chrome-browser` skill first.
+1. `python tools/pine_hunks.py <old.pine> <new.pine> --username <tradingview_username> > edit.js` — `old` is the
+   version currently saved in TradingView (the repo commit matching `expected_version`), `new` the target.
+2. In Chrome: new tab → `https://in.tradingview.com/pine/` → script menu (title at top left) → open the script
+   named in `config/scanner.yaml`. Check the version number at the bottom right.
+3. Run `edit.js` with `javascript_tool`. It only applies the edits if the editor's text matches `old` exactly,
+   and only keeps them if the result matches `new` exactly. Anything but `ok:` → stop; nothing is saved.
+4. Save from the script menu → **Save script** (Ctrl+S in the page may not register). The version number at
+   the bottom right must go up by one, and the status must no longer say "Unsaved version". Record it.
+5. Close the tab. Then, on the bridge, read the chart table: the chart instance stays on the old version until
+   a fresh copy is added (see CLAUDE.md). Never change the `pineVersion` input.
+Libraries (EWBase/EWRules/EWProject) go in the same way, but publishing a new library version stays manual.
+
 ## End of every session — always
 Restore the chart to the recorded symbol and timeframe, then delete `reports/.tv-state.json`.
 Do this even when earlier steps failed.

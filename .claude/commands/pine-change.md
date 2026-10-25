@@ -14,17 +14,19 @@ colours, the version tag) and the user's explicit hard-rule decisions don't need
    branch. Implement the change, bump `EWS_VER`, update `CHANGELOG.md` (and `docs/RULEBOOK.md` if a rule
    changed), update and test the Python port if the logic changed, write chart test cases, and give
    tv-operator the steps.
-2. **tv-operator** — put the user's TradingView username in the import lines, compile (`pine_check` first;
-   if the chart test needs it, `pine_set_source` → `pine_smart_compile` → `pine_get_errors`), then read the
-   Elliott table on each test chart and confirm the new `EWS` tag shows. Restore the chart. **Do not save.**
+2. **tv-operator** — compile on the bridge with `pine_check` (username in the import lines). Do not use the
+   bridge's editor tools (`pine_set_source`, `pine_smart_compile`, `pine_deploy`): they don't reach the editor
+   in this TradingView build. **Do not save yet.**
 3. **pine-dev** — fix and repeat steps 1–2 until it compiles cleanly and the tests are evaluated.
 4. **technical-lead** — review the test results against the rulebook.
 5. Show the user the diff, Python test result, chart test pass/fail table and technical-lead's review, then
    **ask** whether to save. If a library changed, list which library must be published first and the new
    import version.
-6. Only on an explicit yes: tv-operator runs `pine_save` on the script named in `tradingview_script`.
-   pine-dev then sets `expected_version` in `config/scanner.yaml`, records the TradingView script version in
-   CHANGELOG, commits and merges the branch.
+6. Only on an explicit yes: tv-operator puts the change into the editor through Claude in Chrome, sending only
+   the changed lines (tv-operator → "Code into the editor"), saves, and records the new TradingView version.
+   Then it updates the chart (fresh copy of the script, user's inputs kept, old copy removed) and confirms the
+   new `EWS` tag and sensible tables on the test charts through the bridge. pine-dev sets `expected_version`
+   in `config/scanner.yaml`, records the TradingView version in CHANGELOG, commits and merges the branch.
 
 If the user says no, tv-operator restores the editor to the previous source so the chart is left as it was,
 and the branch stays unmerged.

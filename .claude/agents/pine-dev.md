@@ -32,8 +32,8 @@ rulebook (including time relationships).
    vs after) — at least one Nifty stock, BINANCE:BTCUSDT.P and OANDA:XAUUSD.
 6. Hand back to the orchestrator: the diff, the tests, and the steps for tv-operator. The imports use
    `YOUR_TV_USERNAME`; tv-operator must put the user's TradingView username in them before compiling
-   (`pine_check` for a server-side compile, or `pine_set_source` → `pine_smart_compile` → `pine_get_errors`
-   in the editor), then read the table on the test charts.
+   (`pine_check` on the bridge for a server-side compile). Code goes into the editor only through Claude in
+   Chrome with `tools/pine_hunks.py` edits (tv-operator → "Code into the editor").
 7. After results come back, fix and repeat. Report pass/fail per test.
 8. **Saving** (`pine_save`) only after the user explicitly approves — or, in `/scanner-improve`, after a
    `passed 2/2` ledger entry (tv-operator saves; you merge, tag and update CHANGELOG with "automatic").

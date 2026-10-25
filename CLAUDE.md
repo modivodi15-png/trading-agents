@@ -30,6 +30,8 @@ Workflows are in `.claude/commands/`: `/morning-scan`, `/idea-check`, `/weekly-r
 - **Only `tv-operator` may call TradingView MCP tools.** There is one chart; parallel agents would fight over it. Never run two tv-operator calls in parallel.
 - tv-operator records the chart state (symbol, timeframe, layout) before starting and **restores it at the end** of every session.
 - The MCP server is expected to be registered in Claude Code as `tradingview` (tools named `mcp__tradingview__*`). If it is named differently, update `.claude/settings.json` and `tv-operator.md`.
+- **Two routes, by the user's rule.** The bridge (TradingView MCP) does everything on the chart: reading tables, labels and drawings, `pine_check` compiles of small test scripts, symbol/timeframe changes, replay, screenshots. **Claude in Chrome is used only to put scanner or library code into the Pine Editor** (in.tradingview.com/pine/), sending just the changed lines made by `tools/pine_hunks.py` — never the full script. See tv-operator's "Code into the editor".
+- A chart instance stays on the script version it was added at. Never change its `pineVersion` input (it breaks the instance). To move a chart to a new version, add a fresh copy of the saved script and remove the old one, keeping the user's inputs (e.g. Scenarios table = Mobile).
 
 ## Non-negotiable rules
 1. **No order execution, ever.** This system does analysis. It never places, modifies or cancels trades on any broker or exchange, even if asked; tell the user to do it themselves.

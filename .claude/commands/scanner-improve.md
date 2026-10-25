@@ -56,7 +56,7 @@ later cycle with fresh data → `passed 2/2` → step 6. Any fail → `rejected`
 On the same branch: port the change to the Pine library or indicator that holds that logic; if EWRules
 changed, also the EW Rider import. Bump `EWS_VER`, write the CHANGELOG entry ("automatic, FB id, gates
 passed, ledger link"), update RULEBOOK.md where it states the changed value. Run the parity tests that apply.
-**tv-operator**: `pine_check` every changed script with the username in the imports. Compile errors → fix
+**tv-operator**: `pine_check` every changed script (bridge) with the username in the imports. Compile errors → fix
 (up to 3 tries) or mark the ledger `port failed` and stop.
 
 ## 7. Go live everywhere
@@ -64,7 +64,10 @@ passed, ledger link"), update RULEBOOK.md where it states the changed value. Run
   tv-operator saves the library source in the editor; status `awaiting library publish`; notify the user with
   the exact steps (open the library → Publish script → Update existing script). Stop. The next cycle sees the
   new library version, updates the import numbers, and continues from here.
-- **tv-operator**: set the new source on `tradingview_script` and save; then the Rider if it changed. Read the
+- **tv-operator**: put the change into `tradingview_script` through Claude in Chrome, sending only the changed
+  lines ("Code into the editor"), and save; then the Rider if it changed. If Claude in Chrome isn't available in
+  this session, stop here: status `awaiting go-live`, notify the user, and the next cycle (or the user running
+  `/pine-change`) finishes it. Then refresh the chart instance (fresh copy, user's inputs kept, old one removed). Read the
   Elliott table on BINANCE:BTCUSDT.P, OANDA:XAUUSD and one Nifty stock: the new `EWS` tag must show and the
   tables must parse. If not → restore and save the previous source, ledger `go-live failed`, stop.
 - **pine-dev**: merge the branch into `main`, tag it, push; CHANGELOG notes the TradingView script version.
