@@ -48,9 +48,9 @@ def band(fit):
     return "≥80" if fit >= 80 else "70–79" if fit >= 70 else "60–69" if fit >= 60 else "<60"
 
 
-def follow(bars, i0, direction, entry, target, stop, horizon):
-    """-> (outcome, exit_price, bars_held) following bars from index i0 (the entry bar)"""
-    last = min(len(bars) - 1, i0 + horizon)
+def follow(bars, i0, direction, entry, target, stop, horizon, end=None):
+    """-> (outcome, exit_price, bars_held) following bars from index i0 (the entry bar) up to index end"""
+    last = min(len(bars) - 1 if end is None else end, i0 + horizon)
     for k in range(i0, last + 1):
         _, _, h, l, c = bars[k][:5]
         if direction > 0:
@@ -79,6 +79,9 @@ def run(a):
     sc = Scanner(Settings(), ticker=a.ticker, timeframe=a.tf)
     signals, last_key = [], {}
     t0 = _time.time()
+    # holdout: the last N months are never used for tuning; in-sample signals stop being followed at its start
+    cut_t = bars[-1][0] - a.holdout_months * 30.44 * 86400000 if a.holdout_months else None
+    cut_i = next((k for k, x in enumerate(bars) if x[0] >= cut_t), len(bars)) if cut_t else len(bars)
     for i, b in enumerate(bars[:-1]):
         sc.feed(*b[:5])
         if i < a.warmup or i % a.step:
@@ -99,19 +102,24 @@ def run(a):
                 continue  # target already passed or stop on the wrong side at entry
             if abs(entry - stp) / entry * 100 < a.min_risk_pct:
                 continue  # stop inside normal noise: R would be meaningless
-            out, ex, held = follow(bars, i + 1, d, entry, tgt, stp, a.horizon)
+            hold = i + 1 >= cut_i
+            out, ex, held = follow(bars, i + 1, d, entry, tgt, stp, a.horizon, None if hold else cut_i - 1)
             r = r_of(d, entry, ex, stp, a.cost_pct)
             if r is None:
                 continue
             signals.append(dict(bar=i, time=b[0], rank=s.rank, degree=s.degree, pattern=pattern_of(s),
                                 fit=round(s.fit, 1), band=band(s.fit), dir=d, entry=entry, target=tgt,
-                                stop=stp, outcome=out, r=round(r, 3), held=held))
+                                stop=stp, outcome=out, r=round(r, 3), held=held, holdout=hold))
     meta = dict(repo=os.path.abspath(a.repo), commit=git_head(a.repo), csv=os.path.abspath(a.csv),
                 ticker=a.ticker, tf=a.tf, bars=len(bars), first=bars[0][0], last=bars[-1][0],
                 ranks=a.ranks, step=a.step, horizon=a.horizon, cost_pct=a.cost_pct, warmup=a.warmup,
-                min_risk_pct=a.min_risk_pct,
+                min_risk_pct=a.min_risk_pct, holdout_months=a.holdout_months,
+                holdout_from=bars[cut_i][0] if cut_i < len(bars) else None,
                 seconds=round(_time.time() - t0, 1))
-    out = dict(meta=meta, summary=summarize(signals, bars, a), signals=signals)
+    ins = [x for x in signals if not x["holdout"]]
+    hos = [x for x in signals if x["holdout"]]
+    out = dict(meta=meta, summary=summarize(ins, bars[:cut_i], a), holdout=holdout_summary(hos, bars, a),
+               signals=signals)
     os.makedirs(os.path.dirname(os.path.abspath(a.out)), exist_ok=True)
     with open(a.out, "w") as fh:
         json.dump(out, fh, indent=1)
@@ -184,12 +192,24 @@ def summarize(sig, bars, a):
                 by={g: {k: stats(v) for k, v in sorted(d.items())} for g, d in groups.items()})
 
 
+def holdout_summary(sig, bars, a):
+    o = stats(sig)
+    base = baseline(sig, bars, a) if sig else None
+    edge = None
+    if base and o.get("n"):
+        edge = "beats random" if o["avg_r"] > base["avg_r_95"][1] else \
+               "worse than random" if o["avg_r"] < base["avg_r_95"][0] else "not distinguishable from random"
+    return dict(overall=o, baseline=base, edge=edge)
+
+
 def print_summary(out):
     m, s = out["meta"], out["summary"]
     print(f"{m['ticker']} {m['tf']} · {m['bars']} bars · commit {m['commit']} · {m['seconds']}s")
     print("overall", s["overall"])
     print("halves ", s["halves"])
     print("random ", s["baseline"], "→", s["edge"])
+    if m.get("holdout_months"):
+        print("HOLDOUT", out["holdout"]["overall"], "→", out["holdout"]["edge"])
     for g, d in s["by"].items():
         print(f"by {g}:")
         for k, v in d.items():
@@ -198,7 +218,7 @@ def print_summary(out):
 
 def compare(a):
     A, B = (json.load(open(p)) for p in (a.base, a.cand))
-    for k in ("ticker", "tf", "csv", "ranks", "step", "horizon", "cost_pct", "min_risk_pct"):
+    for k in ("ticker", "tf", "csv", "ranks", "step", "horizon", "cost_pct", "min_risk_pct", "holdout_months"):
         if A["meta"][k] != B["meta"][k]:
             sys.exit(f"not comparable: {k} differs ({A['meta'][k]} vs {B['meta'][k]})")
     print(f"{A['meta']['ticker']} {A['meta']['tf']}: base {A['meta']['commit']} vs candidate {B['meta']['commit']}")
@@ -212,6 +232,9 @@ def compare(a):
     for h in ("first", "second"):
         row(f"{h} half", A["summary"]["halves"][h], B["summary"]["halves"][h])
     print(f"  edge vs random: {A['summary']['edge']} → {B['summary']['edge']}")
+    if A["meta"].get("holdout_months"):
+        row("HOLDOUT", A["holdout"]["overall"], B["holdout"]["overall"])
+        print(f"  holdout edge vs random: {A['holdout']['edge']} → {B['holdout']['edge']}")
     for g in sorted(set(A["summary"]["by"]) | set(B["summary"]["by"])):
         ka, kb = A["summary"]["by"].get(g, {}), B["summary"]["by"].get(g, {})
         print(f" by {g}:")
@@ -233,6 +256,8 @@ def main():
     r.add_argument("--horizon", type=int, default=120, help="bars to follow a signal before marking to market")
     r.add_argument("--cost-pct", type=float, default=0.05, help="cost per side, %% of price")
     r.add_argument("--warmup", type=int, default=200, help="bars fed before the first reading")
+    r.add_argument("--holdout-months", type=float, default=0,
+                   help="keep the last N months out of the main results (reported separately as HOLDOUT)")
     r.add_argument("--min-risk-pct", type=float, default=0.5, help="skip signals whose stop is closer than this %% of price")
     c = sp.add_parser("compare")
     c.add_argument("base")

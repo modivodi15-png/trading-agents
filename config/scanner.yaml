@@ -3,6 +3,8 @@
 
 expected_version: v18          # the "EWS vNN" tag the scanner shows in its table (repo version, from CHANGELOG.md). Set to v19 once v19 is saved to TradingView.
 tradingview_script: "Elliott Wave Scanner 9"   # saved script name in TradingView that holds this version
+rider_script: "Elliott Wave Rider"             # the strategy; it imports EWRules too, so rule changes update it as well
+tradingview_username: ""        # for the import lines; tv-operator fills it in from your saved script on first run
 table_mode: Mobile             # the scanner's scenarios table mode on your layouts (Mobile or Compact)
 
 # Before v19 the scanner had no version tag. While the chart still runs v18 (saved as script version 30),

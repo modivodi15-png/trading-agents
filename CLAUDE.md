@@ -21,9 +21,10 @@ right lead for synthesis, then to `contrarian`, then to `brief-writer`.
 | Position plan / sizing | position-sizer (needs entry, invalidation, target) | risk-lead | — |
 | Indicator change | pine-dev (works in the scanner repo; tv-operator compiles and reads charts) | technical-lead (reviews test results) | you ask the user before save |
 | Performance review | trade-journal | risk-lead | brief-writer |
+| Automatic improvement cycle (scheduled every 48 h) | `/scanner-improve`: tv-operator, scanner-evaluator, trade-journal, pine-dev | technical-lead (picks one change) | applies it everywhere after all gates; rolls back if it underperforms |
 | Scanner feedback / test a change | scanner-evaluator (+ pine-dev for the branch, tv-operator for data) | technical-lead (turns feedback into a proposal) | user decides; adopt → `/pine-change` |
 
-Workflows are in `.claude/commands/`: `/morning-scan`, `/idea-check`, `/weekly-review`, `/pine-change`, `/scanner-feedback`.
+Workflows are in `.claude/commands/`: `/morning-scan`, `/idea-check`, `/weekly-review`, `/pine-change`, `/scanner-feedback`, `/scanner-improve`.
 
 ## TradingView access — one agent only
 - **Only `tv-operator` may call TradingView MCP tools.** There is one chart; parallel agents would fight over it. Never run two tv-operator calls in parallel.
@@ -33,7 +34,7 @@ Workflows are in `.claude/commands/`: `/morning-scan`, `/idea-check`, `/weekly-r
 ## Non-negotiable rules
 1. **No order execution, ever.** This system does analysis. It never places, modifies or cancels trades on any broker or exchange, even if asked; tell the user to do it themselves.
 2. **Alerts need approval.** Creating or deleting TradingView alerts requires an explicit yes from the user for each alert (enforced in `.claude/settings.json`).
-3. **Pine saves need approval.** pine-dev compiles and tests freely but never saves over the live indicator without the user's yes.
+3. **Pine saves need approval** — with one exception. pine-dev compiles and tests freely but never saves over the live indicator without the user's yes, *except* inside `/scanner-improve`, which the user has authorised to apply a change everywhere once it has passed every gate in `config/eval-set.yaml` (including holdout and two separate cycles). Nothing else may save automatically.
 4. **Every idea has**: symbol, timeframe, direction, the count it rests on, entry zone, target zone, **invalidation level**, data timestamp (IST). No invalidation → no idea.
 5. **Scanner vs own count are always shown separately.** Label them "Scanner #1 (score 83)" vs "wave-counter count". Never blend them silently.
 6. **Rulebook first.** Wave counts follow the user's rulebook: `docs/RULEBOOK.md` in the scanner repo (see `config/scanner.yaml`), plus any personal overrides in `rulebook/`. If a rule conflicts with textbook EW, the user's rule wins; note the difference.
@@ -41,7 +42,8 @@ Workflows are in `.claude/commands/`: `/morning-scan`, `/idea-check`, `/weekly-r
 8. **Every idea is logged** to `journal/ideas.csv` by trade-journal, including ideas the user rejects.
 9. Outputs are research, not investment advice. Say so once per brief, not on every line.
 10. **Pinned scanner version.** tv-operator checks the scanner's `EWS vNN` tag against `config/scanner.yaml` before reading; a mismatch stops the run. Every idea records the scanner version it came from.
-11. **Evidence before scanner changes.** Changes to scores, weights, thresholds or guidelines need an *adopt* verdict from scanner-evaluator before `/pine-change` saves them. Hard rules change only when the user decides, never on statistics alone.
+11. **Evidence before scanner changes.** Changes to scores, weights, thresholds or guidelines need an *adopt* verdict from scanner-evaluator before `/pine-change` saves them, or a `passed 2/2` in `/scanner-improve`. Hard rules change only when the user decides, never on statistics alone.
+12. **Stay in sync.** At the start of every session, `git pull` this folder and the scanner repo: the scheduled cycle may have changed the scanner, its version or this pack since you last ran.
 
 ## Signal classification (default)
 Defined in `config/signal-rules.md`. Change it there, not in agent prompts.
@@ -53,6 +55,7 @@ Defined in `config/signal-rules.md`. Change it there, not in agent prompts.
 - `rulebook/` — personal overrides on top of RULEBOOK.md (optional)
 - `journal/ideas.csv` — every idea and its outcome
 - `feedback/log.md` — scanner feedback and its status (scanner-evaluator)
+- `feedback/ledger.md` — every candidate change ever tested and its status; `feedback/cycles.md` — one line per automatic cycle
 - `config/eval-set.yaml`, `tools/ews_eval.py`, `data/`, `reports/eval/` — scanner evaluation set, replay tool, price history, results
 - `watchlists/` — saved symbol lists
 - `reports/YYYY-MM-DD-<type>.md` — briefs and reviews

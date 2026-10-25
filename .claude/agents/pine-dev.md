@@ -35,7 +35,9 @@ rulebook (including time relationships).
    (`pine_check` for a server-side compile, or `pine_set_source` → `pine_smart_compile` → `pine_get_errors`
    in the editor), then read the table on the test charts.
 7. After results come back, fix and repeat. Report pass/fail per test.
-8. **Saving** (`pine_save`) only after the user explicitly approves. After the save, update
+8. **Saving** (`pine_save`) only after the user explicitly approves — or, in `/scanner-improve`, after a
+   `passed 2/2` ledger entry (tv-operator saves; you merge, tag and update CHANGELOG with "automatic").
+   In that cycle, build candidates in the Python port first and port to Pine only once they've passed. After the save, update
    `expected_version` in `config/scanner.yaml`, note the TradingView script version in CHANGELOG
    ("saved as scanner vNN"), and merge the branch.
 

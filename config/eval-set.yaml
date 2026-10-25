@@ -1,30 +1,43 @@
 # Markets and settings scanner-evaluator replays for every baseline and candidate.
 # Same settings for base and candidate, always. Data files go in data/ (not committed to git).
 
-markets:
-  - {ticker: BTCUSD,   tf: D,   csv: data/BTCUSD_D.csv}
-  - {ticker: BTCUSD,   tf: 240, csv: data/BTCUSD_240.csv}
-  - {ticker: XAUUSD,   tf: D,   csv: data/XAUUSD_D.csv}
-  - {ticker: XAUUSD,   tf: 240, csv: data/XAUUSD_240.csv}
-  - {ticker: XAGUSD,   tf: D,   csv: data/XAGUSD_D.csv}
-  - {ticker: NIFTY,    tf: D,   csv: data/NIFTY_D.csv}
-  - {ticker: RELIANCE, tf: D,   csv: data/RELIANCE_D.csv}
-  - {ticker: HDFCBANK, tf: D,   csv: data/HDFCBANK_D.csv}
-  - {ticker: TCS,      tf: D,   csv: data/TCS_D.csv}
-  - {ticker: JSWSTEEL, tf: D,   csv: data/JSWSTEEL_D.csv}
+markets:            # tuning set: candidates are judged here first
+  - {ticker: BTCUSD,   tf: D,   csv: data/BTCUSD_D.csv,   tv: BITSTAMP:BTCUSD}
+  - {ticker: BTCUSD,   tf: 240, csv: data/BTCUSD_240.csv, tv: BITSTAMP:BTCUSD}
+  - {ticker: XAUUSD,   tf: D,   csv: data/XAUUSD_D.csv,   tv: OANDA:XAUUSD}
+  - {ticker: XAUUSD,   tf: 240, csv: data/XAUUSD_240.csv, tv: OANDA:XAUUSD}
+  - {ticker: NIFTY,    tf: D,   csv: data/NIFTY_D.csv,    tv: NSE:NIFTY}
+  - {ticker: RELIANCE, tf: D,   csv: data/RELIANCE_D.csv, tv: NSE:RELIANCE}
+  - {ticker: HDFCBANK, tf: D,   csv: data/HDFCBANK_D.csv, tv: NSE:HDFCBANK}
+  - {ticker: JSWSTEEL, tf: D,   csv: data/JSWSTEEL_D.csv, tv: NSE:JSWSTEEL}
+
+holdout_markets:    # never looked at while choosing or shaping a candidate; only for the final check
+  - {ticker: XAGUSD,   tf: D,   csv: data/XAGUSD_D.csv,   tv: OANDA:XAGUSD}
+  - {ticker: TCS,      tf: D,   csv: data/TCS_D.csv,      tv: NSE:TCS}
 
 settings:
   ranks: 1            # score the top-ranked scenario; use 2 to include the alternative
   horizon: 120        # bars to follow a signal before marking it to market
   cost_pct: 0.05      # per side, % of price (raise for NSE delivery with STT, or for BTC perps funding)
   min_risk_pct: 0.5   # skip signals whose stop is closer than this % of price
+  holdout_months: 9   # the last 9 months of every market are kept out of tuning
   step_quick: 3       # exploratory runs
   step_final: 1       # runs a decision rests on
 
-acceptance:
+acceptance:          # manual tests (/scanner-feedback test) and the first gate of the automatic cycle
   min_signals_per_bucket: 20     # targeted pattern/degree/score band, per market, before any conclusion
-  min_markets_improved: 6        # of the markets above, on avg R and median R
+  min_markets_improved: 5        # of the tuning markets, on avg R and median R
   max_markets_worse: 1           # markets where avg R falls by more than the tolerance
   worse_tolerance_r: 0.05
   must_beat_random: true         # overall avg R above the random-direction baseline's 95% band
-  second_half_must_improve: true # out-of-sample check
+  second_half_must_improve: true
+
+auto:                # extra gates for /scanner-improve, which applies changes without asking
+  holdout_must_not_worsen: true  # holdout period AND holdout markets: avg R and median R not lower than base
+  confirm_cycles: 2              # must pass in 2 separate cycles (fresh data each time) before it goes live
+  max_candidates_per_cycle: 1
+  max_live_changes_per_30_days: 2
+  hard_rules_locked: true        # never change a hard rule in RULEBOOK.md automatically
+  rollback:
+    watch_cycles: 5              # after going live, compare live vs previous version on new data each cycle
+    worse_by_r: 0.10             # roll back if the live version's avg R on post-change signals is this much worse

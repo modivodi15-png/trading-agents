@@ -52,6 +52,20 @@ Clone the scanner repo next to this folder (`Downloads\elliott-wave-scanner`), o
 v18 (saved as script version 30) has no tag; with `expected_version: v18` readings are marked unverified.
 Once v19 (branch `ews-version-tag`) is saved, set `expected_version: v19`.
 
+## Automatic improvement cycle
+
+`/scanner-improve` runs every 48 hours as a scheduled task while your laptop and TradingView are on. Each run:
+refreshes data → checks the last live change and rolls it back if it's underperforming → logs failures →
+tests at most one change (scores, weights, thresholds or guidelines; never hard rules) → if it has passed
+every gate in two separate cycles, applies it to the scanner repo, Python engine, TradingView scanner and
+EW Rider, and this pack's pinned version. Gates: tuning markets, both halves of history, the random baseline,
+the last 9 months (never used for tuning) and two markets kept out of tuning entirely. At most two live
+changes per 30 days. Every candidate is recorded in `feedback/ledger.md`; every run in `feedback/cycles.md`.
+
+The one manual step: TradingView only lets a person publish a library. If a change touches EWRules,
+EWProject or EWBase, the cycle saves the library source and notifies you to click Publish; the next cycle
+finishes the rollout.
+
 ## Models
 
 Each agent's model is set in its frontmatter to match how much judgment the job needs:
@@ -75,6 +89,7 @@ To change an agent, edit the `model:` line in `.claude/agents/<name>.md`.
 | `/weekly-review` | Score past ideas, find what works, propose changes |
 | `/pine-change <rule change>` | Change the scanner, test, save on approval |
 | `/scanner-feedback <note \| baseline \| test <branch> \| status>` | Log feedback, measure the scanner, test a change with evidence |
+| `/scanner-improve` | Automatic cycle, scheduled every 48 h: finds failures, tests one change, applies it everywhere once it passes twice, rolls back if it underperforms |
 
 Or just ask in plain language — trading-master routes it.
 
