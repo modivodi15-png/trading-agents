@@ -1,0 +1,74 @@
+# Symbol universes. TradingView symbol format. Edit freely.
+# Note: M&M must be written NSE:M&M (NSE:M_M fails). Bajaj Auto is NSE:BAJAJ_AUTO.
+
+nifty50:
+  # Constituents as used on 2026-10-25 (BSE replaced Wipro from 2026-09-30).
+  # Re-check after each semi-annual review (effective last working day of March / September).
+  - NSE:RELIANCE
+  - NSE:TCS
+  - NSE:HDFCBANK
+  - NSE:ICICIBANK
+  - NSE:INFY
+  - NSE:BHARTIARTL
+  - NSE:ITC
+  - NSE:SBIN
+  - NSE:LT
+  - NSE:HINDUNILVR
+  - NSE:KOTAKBANK
+  - NSE:AXISBANK
+  - NSE:BAJFINANCE
+  - NSE:M&M
+  - NSE:MARUTI
+  - NSE:SUNPHARMA
+  - NSE:HCLTECH
+  - NSE:NTPC
+  - NSE:TITAN
+  - NSE:ULTRACEMCO
+  - NSE:TMPV
+  - NSE:ONGC
+  - NSE:ADANIPORTS
+  - NSE:POWERGRID
+  - NSE:ASIANPAINT
+  - NSE:BAJAJFINSV
+  - NSE:COALINDIA
+  - NSE:NESTLEIND
+  - NSE:BSE
+  - NSE:JSWSTEEL
+  - NSE:TATASTEEL
+  - NSE:GRASIM
+  - NSE:TECHM
+  - NSE:HINDALCO
+  - NSE:CIPLA
+  - NSE:DRREDDY
+  - NSE:EICHERMOT
+  - NSE:SBILIFE
+  - NSE:HDFCLIFE
+  - NSE:APOLLOHOSP
+  - NSE:TRENT
+  - NSE:ADANIENT
+  - NSE:SHRIRAMFIN
+  - NSE:BAJAJ_AUTO
+  - NSE:TATACONSUM
+  - NSE:JIOFIN
+  - NSE:ETERNAL
+  - NSE:MAXHEALTH
+  - NSE:INDIGO
+  - NSE:BEL
+
+indices:
+  - NSE:NIFTY
+  - NSE:BANKNIFTY
+
+crypto:
+  - BINANCE:BTCUSDT.P
+  - BITSTAMP:BTCUSD
+
+metals:
+  - OANDA:XAUUSD
+  - OANDA:XAGUSD
+
+# Default timeframes per workflow
+timeframes:
+  morning_scan: [D]
+  idea_check: [W, D, 240, 60]
+  crypto_intraday: [240, 60, 15]

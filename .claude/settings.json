@@ -1,0 +1,20 @@
+{
+  "permissions": {
+    "ask": [
+      "mcp__tradingview__alert_create",
+      "mcp__tradingview__alert_create_indicator",
+      "mcp__tradingview__alert_delete",
+      "mcp__tradingview__pine_save",
+      "mcp__tradingview__pine_save_as",
+      "mcp__tradingview__pine_deploy",
+      "mcp__tradingview__pine_delete",
+      "mcp__tradingview__pine_rename",
+      "mcp__tradingview__draw_clear",
+      "mcp__tradingview__watchlist_remove"
+    ],
+    "deny": [
+      "mcp__tradingview__replay_trade",
+      "mcp__tradingview__pine_publish_dialog_inspect"
+    ]
+  }
+}

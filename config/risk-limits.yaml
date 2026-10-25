@@ -1,0 +1,26 @@
+# Risk limits used by position-sizer and risk-lead.
+# PLACEHOLDERS — set your own numbers before relying on sizing output.
+# risk-lead will refuse to size trades while `configured: false`.
+
+configured: false
+
+account:
+  base_currency: INR          # INR for NSE; sizing for crypto/metals converts at the live rate
+  equity: 0                   # account equity used for % risk maths
+
+per_trade:
+  max_risk_pct: 0.0           # e.g. 0.5 = risk 0.5% of equity between entry and invalidation
+  min_reward_risk: 0.0        # e.g. 2.0 = skip trades with less than 2R to the first target
+
+portfolio:
+  max_open_risk_pct: 0.0      # total risk across all open ideas
+  max_positions: 0
+  max_correlated_positions: 0 # positions with 60-day return correlation above the threshold below
+  correlation_threshold: 0.7
+
+leverage:
+  crypto_max: 0               # max leverage for BTC perps
+  equity_futures_max: 0
+
+# Ideas against the higher-degree count need this much extra R:R
+counter_trend_rr_premium: 0.0
