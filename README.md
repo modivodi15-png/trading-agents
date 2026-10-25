@@ -36,6 +36,20 @@ Only **tv-operator** touches TradingView, so agents never fight over your one ch
 | contrarian | Opposing case for every idea |
 | brief-writer | Daily brief, idea write-ups, weekly review |
 
+## Scanner version and repo
+
+The agents use your `elliott-wave-scanner` repo, set in `config/scanner.yaml`:
+- **wave-counter** reads `docs/RULEBOOK.md` and runs the Python engine `ewscan` on the same bars as a
+  repeatable check (main and lower degree match the chart; higher degree is approximate since v17e).
+- **pine-dev** edits the real Pine source and CHANGELOG on a branch.
+- **tv-operator** checks the `EWS vNN` tag in the scanner table against `expected_version` and stops on a
+  mismatch. Every journaled idea records the version. Since several saved TradingView scripts share the
+  title "Elliott Wave Scanner", keep only one on the chart.
+
+Clone the scanner repo next to this folder (`Downloads\elliott-wave-scanner`), or change `repo_path`.
+v18 (saved as script version 30) has no tag; with `expected_version: v18` readings are marked unverified.
+Once v19 (branch `ews-version-tag`) is saved, set `expected_version: v19`.
+
 ## Models
 
 Each agent's model is set in its frontmatter to match how much judgment the job needs:

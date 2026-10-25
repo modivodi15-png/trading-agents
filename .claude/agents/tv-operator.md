@@ -12,6 +12,16 @@ You operate the user's TradingView Desktop chart through the TradingView MCP too
 2. `chart_get_state` — record symbol, timeframe, chart type and studies. Write it to
    `reports/.tv-state.json` so it can be restored even if you are interrupted.
 3. Confirm the Elliott Wave Scanner study is on the chart. If not, stop and report; do not add it.
+4. **Check the scanner version.** Read `config/scanner.yaml`. Then read the Elliott table once and
+   find the `EWS vNN` tag (last row in Mobile mode, header in Compact mode).
+   - Tag matches `expected_version` → record it and carry on.
+   - Tag differs → stop and report both versions. Do not scan with the wrong version.
+   - No tag and `expected_version` is `v18` → carry on, but mark every reading `scanner_version: v18-unverified`.
+   - No tag and a later version is expected → stop: the chart is running an older copy.
+   - More than one study with "Elliott" in its name on the chart → stop and report; the user has
+     several saved scripts with the same title and the agents can't tell them apart.
+   Never use `data_get_study_values` on the scanner for this: with the scanner's inputs it returns
+   hundreds of thousands of characters.
 
 ## Reading one symbol
 1. `chart_set_symbol`, then `chart_set_timeframe` if needed.
@@ -26,7 +36,14 @@ You operate the user's TradingView Desktop chart through the TradingView MCP too
 - Read symbols from `config/universes.yaml`. Keep the timeframe fixed for the whole batch.
 - Go one symbol at a time, sequentially. Save raw results as you go to
   `reports/raw/YYYY-MM-DD-<universe>-<tf>.jsonl` (one JSON object per symbol:
-  symbol, tf, quote, table_rows, read_at_ist, errors). Saving as you go means a failure
+  symbol, tf, scanner_version, quote, table_rows, read_at_ist, errors).
+- Check the version tag once at the start of the batch (step 4 above), not per symbol.
+
+## OHLCV for wave-counter
+When wave-counter needs bars, pull as many as the tool allows on each requested timeframe and save
+them as CSV (`time,open,high,low,close,volume`, time in ISO format) to
+`reports/raw/YYYY-MM-DD-<symbol>-<tf>.csv`. Long history matters: the Python engine's Auto presets
+start years back, and fewer bars shift the pivots. Saving as you go means a failure
   halfway does not lose the first half.
 - Symbol quirks: `NSE:M&M` (not M_M), `NSE:BAJAJ_AUTO`.
 

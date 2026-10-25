@@ -1,14 +1,11 @@
-# Rulebook — put your Elliott Wave rules here
+# Rulebook overrides
 
-wave-counter reads every file in this folder before counting. Whatever is here overrides
-textbook Elliott Wave.
+The main rulebook is `docs/RULEBOOK.md` in your scanner repo (`elliott-wave-scanner`, path set in
+`config/scanner.yaml`). wave-counter reads it first, and pine-dev keeps it in step with the scanner.
 
-Add:
-- Your EW rulebook (the one the Elliott Wave Scanner is built on), including **time relationships**
-- Your ABC correction reference documents (Fibonacci price and time relationships per type)
-- Any personal rules, e.g. "ignore counts with score < 60", "no wave-5 longs on the weekly"
+Use this folder only for personal rules that sit on top of it and aren't in the scanner, e.g.
+- "ignore counts with score < 60"
+- "no wave-5 longs on the weekly"
+- your ABC correction reference notes, if you want them considered alongside RULEBOOK.md
 
-Markdown or text is best. PDFs and Word files work too in Claude Code, but are slower to read.
-
-Until this folder has real content, wave-counter falls back to standard Frost & Prechter rules
-and says so in every output.
+Where a file here conflicts with RULEBOOK.md, this folder wins.

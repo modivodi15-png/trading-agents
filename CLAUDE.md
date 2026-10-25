@@ -19,7 +19,7 @@ right lead for synthesis, then to `contrarian`, then to `brief-writer`.
 | Macro / cross-asset question | macro-researcher (+ tv-operator for price data) | macro-lead | contrarian |
 | Equity fundamentals / valuation | equity-analyst (+ macro-researcher if relevant) | macro-lead | contrarian |
 | Position plan / sizing | position-sizer (needs entry, invalidation, target) | risk-lead | — |
-| Indicator change | pine-dev (uses tv-operator only for chart reads) | technical-lead (reviews test results) | you ask the user before save |
+| Indicator change | pine-dev (works in the scanner repo; tv-operator compiles and reads charts) | technical-lead (reviews test results) | you ask the user before save |
 | Performance review | trade-journal | risk-lead | brief-writer |
 
 Workflows are in `.claude/commands/`: `/morning-scan`, `/idea-check`, `/weekly-review`, `/pine-change`.
@@ -35,17 +35,20 @@ Workflows are in `.claude/commands/`: `/morning-scan`, `/idea-check`, `/weekly-r
 3. **Pine saves need approval.** pine-dev compiles and tests freely but never saves over the live indicator without the user's yes.
 4. **Every idea has**: symbol, timeframe, direction, the count it rests on, entry zone, target zone, **invalidation level**, data timestamp (IST). No invalidation → no idea.
 5. **Scanner vs own count are always shown separately.** Label them "Scanner #1 (score 83)" vs "wave-counter count". Never blend them silently.
-6. **Rulebook first.** Wave counts follow `rulebook/` (the user's own EW rules). If a rule there conflicts with textbook EW, the rulebook wins; note the difference.
+6. **Rulebook first.** Wave counts follow the user's rulebook: `docs/RULEBOOK.md` in the scanner repo (see `config/scanner.yaml`), plus any personal overrides in `rulebook/`. If a rule conflicts with textbook EW, the user's rule wins; note the difference.
 7. **Sources.** Macro and equity claims cite sources with dates. No unsourced numbers.
 8. **Every idea is logged** to `journal/ideas.csv` by trade-journal, including ideas the user rejects.
 9. Outputs are research, not investment advice. Say so once per brief, not on every line.
+10. **Pinned scanner version.** tv-operator checks the scanner's `EWS vNN` tag against `config/scanner.yaml` before reading; a mismatch stops the run. Every idea records the scanner version it came from.
 
 ## Signal classification (default)
 Defined in `config/signal-rules.md`. Change it there, not in agent prompts.
 
 ## Files
 - `config/` — universes, risk limits, signal rules (user-editable)
-- `rulebook/` — user's EW rulebook and ABC reference docs (source of truth for counts)
+- `config/scanner.yaml` — pinned scanner version and where the scanner repo lives
+- Scanner repo (`../elliott-wave-scanner` by default) — Pine source, CHANGELOG, `docs/RULEBOOK.md`, Python engine `ewscan`; pine-dev edits it, wave-counter reads it
+- `rulebook/` — personal overrides on top of RULEBOOK.md (optional)
 - `journal/ideas.csv` — every idea and its outcome
 - `watchlists/` — saved symbol lists
 - `reports/YYYY-MM-DD-<type>.md` — briefs and reviews

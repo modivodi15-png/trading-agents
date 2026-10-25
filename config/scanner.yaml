@@ -1,0 +1,20 @@
+# Which Elliott Wave Scanner version the agents expect, and where its source lives.
+# Change `expected_version` deliberately when you move to a new scanner version.
+
+expected_version: v18          # the "EWS vNN" tag the scanner shows in its table (repo version, from CHANGELOG.md). Set to v19 once v19 is saved to TradingView.
+tradingview_script: "Elliott Wave Scanner 9"   # saved script name in TradingView that holds this version
+table_mode: Mobile             # the scanner's scenarios table mode on your layouts (Mobile or Compact)
+
+# Before v19 the scanner had no version tag. While the chart still runs v18 (saved as script version 30),
+# set expected_version: v18 and tv-operator will accept a table with no tag but flag every reading "unverified".
+
+# Your scanner repo: Pine source, CHANGELOG, the rulebook and the Python engine.
+# Path is relative to this trading-agents folder. If it doesn't exist, agents clone it from `repo_url`.
+repo_path: ../elliott-wave-scanner
+repo_url: https://github.com/modivodi15-png/elliott-wave-scanner
+
+rulebook: docs/RULEBOOK.md     # inside repo_path; wave-counter's main source of rules
+python_engine: python          # inside repo_path; run with: cd <repo_path>/python && python -m ewscan ...
+
+# The Python port lags the Pine scanner here (see CHANGELOG v17e onwards): higher-degree readings may differ.
+python_parity_note: "main and lower degree match the chart; higher degree is approximate since v17e"

@@ -1,20 +1,25 @@
 ---
-description: Change the Elliott Wave Scanner indicator — implement, compile, test on saved charts, and save only after approval.
-argument-hint: "<rule change, e.g. 'flag expanded flats where C < 100% of A'>"
+description: Change the Elliott Wave Scanner — implement in the scanner repo on a branch, compile, test on charts, and save to TradingView only after approval.
+argument-hint: "<change, e.g. 'flag expanded flats where C < 100% of A'>"
 ---
 
-Indicator change requested: $ARGUMENTS
+Scanner change requested: $ARGUMENTS
 
-1. If `pine/elliott-wave-scanner.pine` is missing: **tv-operator** opens the scanner with
-   `pine_open`/`pine_get_source` and saves the source there. Restore the chart.
-2. **pine-dev** — implement the change locally, update `pine/CHANGELOG.md`, write test cases in
-   `pine/tests.md` (at least: one Nifty stock, BTCUSDT.P, XAUUSD), and give tv-operator the steps.
-3. **tv-operator** — `pine_set_source` → `pine_smart_compile` → `pine_get_errors`. If it compiles,
-   read the Elliott table on each test chart. Restore the chart. **Do not save.**
-4. **pine-dev** — fix and repeat steps 2–3 until it compiles cleanly and tests are evaluated.
-5. **technical-lead** — review the test results against the rulebook.
-6. Show the user the diff, test pass/fail table and technical-lead's review, then **ask** whether
-   to save. Only on an explicit yes does tv-operator run `pine_save`.
+1. **pine-dev** — read `config/scanner.yaml`; clone the scanner repo to `repo_path` if missing and create a
+   branch. Implement the change, bump `EWS_VER`, update `CHANGELOG.md` (and `docs/RULEBOOK.md` if a rule
+   changed), update and test the Python port if the logic changed, write chart test cases, and give
+   tv-operator the steps.
+2. **tv-operator** — put the user's TradingView username in the import lines, compile (`pine_check` first;
+   if the chart test needs it, `pine_set_source` → `pine_smart_compile` → `pine_get_errors`), then read the
+   Elliott table on each test chart and confirm the new `EWS` tag shows. Restore the chart. **Do not save.**
+3. **pine-dev** — fix and repeat steps 1–2 until it compiles cleanly and the tests are evaluated.
+4. **technical-lead** — review the test results against the rulebook.
+5. Show the user the diff, Python test result, chart test pass/fail table and technical-lead's review, then
+   **ask** whether to save. If a library changed, list which library must be published first and the new
+   import version.
+6. Only on an explicit yes: tv-operator runs `pine_save` on the script named in `tradingview_script`.
+   pine-dev then sets `expected_version` in `config/scanner.yaml`, records the TradingView script version in
+   CHANGELOG, commits and merges the branch.
 
-If the user says no, have tv-operator restore the previous source with `pine_set_source` from
-the saved local copy so the chart is left as it was.
+If the user says no, tv-operator restores the editor to the previous source so the chart is left as it was,
+and the branch stays unmerged.

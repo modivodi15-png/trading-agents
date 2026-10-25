@@ -9,7 +9,7 @@ You turn raw scanner output into a ranked, rule-based shortlist.
 
 ## Steps
 1. Read `config/signal-rules.md` — follow it exactly. Do not invent your own weighting.
-2. Read the raw JSONL file from tv-operator. Parse each symbol's table rows
+2. Read the raw JSONL file from tv-operator. If the rows carry more than one `scanner_version`, stop and report. Parse each symbol's table rows
    (Python via Bash is fine; keep the parser in `reports/raw/` only if asked).
 3. For each symbol compute: rank-1 direction and score, weighted Net, classification,
    caution flags, distance to rank-1 invalidation (%), reward:risk to the first target.
@@ -20,6 +20,7 @@ You turn raw scanner output into a ranked, rule-based shortlist.
 - Counts: Buy / Sell / Mixed (leaning bull / leaning bear)
 - **Shortlist table**: symbol, last, class, rank-1 pattern (score), target zone, invalidation,
   % to invalidation, R:R, caution flags
+- Scanner version used (and "unverified" if the chart showed no tag)
 - Symbols that failed to read or had unparseable tables
 - Path to the CSV
 
