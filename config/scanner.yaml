@@ -16,5 +16,6 @@ repo_url: https://github.com/modivodi15-png/elliott-wave-scanner
 rulebook: docs/RULEBOOK.md     # inside repo_path; wave-counter's main source of rules
 python_engine: python          # inside repo_path; run with: cd <repo_path>/python && python -m ewscan ...
 
-# The Python port lags the Pine scanner here (see CHANGELOG v17e onwards): higher-degree readings may differ.
-python_parity_note: "main and lower degree match the chart; higher degree is approximate since v17e"
+# Python port status (see CHANGELOG): since v18.1 it matches the scanner on all three degrees, including
+# the higher degree's v17e-g changes (127 tests). Any difference from the chart is now a finding to report.
+python_parity_note: "all three degrees match the chart since v18.1"

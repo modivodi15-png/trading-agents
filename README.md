@@ -40,7 +40,7 @@ Only **tv-operator** touches TradingView, so agents never fight over your one ch
 
 The agents use your `elliott-wave-scanner` repo, set in `config/scanner.yaml`:
 - **wave-counter** reads `docs/RULEBOOK.md` and runs the Python engine `ewscan` on the same bars as a
-  repeatable check (main and lower degree match the chart; higher degree is approximate since v17e).
+  repeatable check (all three degrees match the chart since v18.1).
 - **pine-dev** edits the real Pine source and CHANGELOG on a branch.
 - **tv-operator** checks the `EWS vNN` tag in the scanner table against `expected_version` and stops on a
   mismatch. Every journaled idea records the version. Since several saved TradingView scripts share the
