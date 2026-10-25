@@ -36,16 +36,19 @@ You operate the user's TradingView Desktop chart through the TradingView MCP too
 - Read symbols from `config/universes.yaml`. Keep the timeframe fixed for the whole batch.
 - Go one symbol at a time, sequentially. Save raw results as you go to
   `reports/raw/YYYY-MM-DD-<universe>-<tf>.jsonl` (one JSON object per symbol:
-  symbol, tf, scanner_version, quote, table_rows, read_at_ist, errors).
+  symbol, tf, scanner_version, quote, table_rows, read_at_ist, errors). Saving as you go means a
+  failure halfway does not lose the first half.
 - Check the version tag once at the start of the batch (step 4 above), not per symbol.
+- Symbol quirks: `NSE:M&M` (not M_M), `NSE:BAJAJ_AUTO`.
 
-## OHLCV for wave-counter
+## OHLCV for wave-counter and scanner-evaluator
 When wave-counter needs bars, pull as many as the tool allows on each requested timeframe and save
 them as CSV (`time,open,high,low,close,volume`, time in ISO format) to
 `reports/raw/YYYY-MM-DD-<symbol>-<tf>.csv`. Long history matters: the Python engine's Auto presets
-start years back, and fewer bars shift the pivots. Saving as you go means a failure
-  halfway does not lose the first half.
-- Symbol quirks: `NSE:M&M` (not M_M), `NSE:BAJAJ_AUTO`.
+start years back, and fewer bars shift the pivots.
+
+For scanner-evaluator, save long-history CSVs to `data/<TICKER>_<TF>.csv` (names as in
+`config/eval-set.yaml`), overwriting the old file.
 
 ## End of every session — always
 Restore the chart to the recorded symbol and timeframe, then delete `reports/.tv-state.json`.

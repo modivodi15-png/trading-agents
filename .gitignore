@@ -1,3 +1,7 @@
 reports/raw/
 reports/.tv-state.json
 .DS_Store
+data/*
+!data/.gitkeep
+reports/eval/*.json
+__pycache__/

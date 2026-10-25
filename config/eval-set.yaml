@@ -1,0 +1,30 @@
+# Markets and settings scanner-evaluator replays for every baseline and candidate.
+# Same settings for base and candidate, always. Data files go in data/ (not committed to git).
+
+markets:
+  - {ticker: BTCUSD,   tf: D,   csv: data/BTCUSD_D.csv}
+  - {ticker: BTCUSD,   tf: 240, csv: data/BTCUSD_240.csv}
+  - {ticker: XAUUSD,   tf: D,   csv: data/XAUUSD_D.csv}
+  - {ticker: XAUUSD,   tf: 240, csv: data/XAUUSD_240.csv}
+  - {ticker: XAGUSD,   tf: D,   csv: data/XAGUSD_D.csv}
+  - {ticker: NIFTY,    tf: D,   csv: data/NIFTY_D.csv}
+  - {ticker: RELIANCE, tf: D,   csv: data/RELIANCE_D.csv}
+  - {ticker: HDFCBANK, tf: D,   csv: data/HDFCBANK_D.csv}
+  - {ticker: TCS,      tf: D,   csv: data/TCS_D.csv}
+  - {ticker: JSWSTEEL, tf: D,   csv: data/JSWSTEEL_D.csv}
+
+settings:
+  ranks: 1            # score the top-ranked scenario; use 2 to include the alternative
+  horizon: 120        # bars to follow a signal before marking it to market
+  cost_pct: 0.05      # per side, % of price (raise for NSE delivery with STT, or for BTC perps funding)
+  min_risk_pct: 0.5   # skip signals whose stop is closer than this % of price
+  step_quick: 3       # exploratory runs
+  step_final: 1       # runs a decision rests on
+
+acceptance:
+  min_signals_per_bucket: 20     # targeted pattern/degree/score band, per market, before any conclusion
+  min_markets_improved: 6        # of the markets above, on avg R and median R
+  max_markets_worse: 1           # markets where avg R falls by more than the tolerance
+  worse_tolerance_r: 0.05
+  must_beat_random: true         # overall avg R above the random-direction baseline's 95% band
+  second_half_must_improve: true # out-of-sample check

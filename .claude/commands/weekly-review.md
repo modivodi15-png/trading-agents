@@ -9,8 +9,9 @@ Run the weekly review.
 3. **trade-journal** — update outcomes (target / invalidated / expired) for taken and skipped ideas;
    compute the review statistics.
 4. **risk-lead** — interpret the stats; propose changes only for buckets with ≥10 closed ideas.
-5. **technical-lead** — if the stats point to a scanner weakness (e.g. one pattern type keeps
-   failing), describe the rule change for pine-dev. Do not start the change.
+5. **scanner-evaluator** — log every scanner failure from this week in `feedback/log.md`.
+   **technical-lead** — if the stats or the log point to a scanner weakness (e.g. one pattern type keeps
+   failing), describe one concrete change and suggest `/scanner-feedback test` for it. Do not start the change.
 6. **brief-writer** — weekly review to `reports/YYYY-MM-DD-weekly.md`.
 
 Reply with the 3 clearest findings and any proposed changes awaiting the user's decision.

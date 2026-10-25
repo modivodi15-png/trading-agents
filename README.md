@@ -12,6 +12,7 @@ trading-master (main session, rules in CLAUDE.md)
 ├── technical-lead ── tv-operator · wave-counter · screener · pine-dev · crypto-derivs
 ├── macro-lead ────── macro-researcher · equity-analyst
 ├── risk-lead ─────── position-sizer · trade-journal
+├── scanner ───────── scanner-evaluator (feedback → evidence → pine-dev)
 └── shared ────────── contrarian · brief-writer
 ```
 
@@ -35,6 +36,7 @@ Only **tv-operator** touches TradingView, so agents never fight over your one ch
 | trade-journal | Logs every idea and outcome; hit rates by pattern and score |
 | contrarian | Opposing case for every idea |
 | brief-writer | Daily brief, idea write-ups, weekly review |
+| scanner-evaluator | Feedback log; replays history through the Python engine to test scanner changes |
 
 ## Scanner version and repo
 
@@ -57,7 +59,7 @@ Each agent's model is set in its frontmatter to match how much judgment the job 
 | Model | Agents |
 |---|---|
 | haiku | tv-operator, screener, position-sizer, trade-journal, brief-writer |
-| sonnet | macro-researcher, equity-analyst, crypto-derivs, technical-lead, macro-lead, risk-lead, contrarian, pine-dev |
+| sonnet | macro-researcher, equity-analyst, crypto-derivs, technical-lead, macro-lead, risk-lead, contrarian, pine-dev, scanner-evaluator |
 | opus | wave-counter |
 
 The main session (trading-master) uses whatever model you pick in Claude Code. Sonnet is
@@ -72,6 +74,7 @@ To change an agent, edit the `model:` line in `.claude/agents/<name>.md`.
 | `/idea-check <symbol> [thesis]` | Full workup of one idea |
 | `/weekly-review` | Score past ideas, find what works, propose changes |
 | `/pine-change <rule change>` | Change the scanner, test, save on approval |
+| `/scanner-feedback <note \| baseline \| test <branch> \| status>` | Log feedback, measure the scanner, test a change with evidence |
 
 Or just ask in plain language — trading-master routes it.
 

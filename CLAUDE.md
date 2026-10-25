@@ -21,8 +21,9 @@ right lead for synthesis, then to `contrarian`, then to `brief-writer`.
 | Position plan / sizing | position-sizer (needs entry, invalidation, target) | risk-lead | — |
 | Indicator change | pine-dev (works in the scanner repo; tv-operator compiles and reads charts) | technical-lead (reviews test results) | you ask the user before save |
 | Performance review | trade-journal | risk-lead | brief-writer |
+| Scanner feedback / test a change | scanner-evaluator (+ pine-dev for the branch, tv-operator for data) | technical-lead (turns feedback into a proposal) | user decides; adopt → `/pine-change` |
 
-Workflows are in `.claude/commands/`: `/morning-scan`, `/idea-check`, `/weekly-review`, `/pine-change`.
+Workflows are in `.claude/commands/`: `/morning-scan`, `/idea-check`, `/weekly-review`, `/pine-change`, `/scanner-feedback`.
 
 ## TradingView access — one agent only
 - **Only `tv-operator` may call TradingView MCP tools.** There is one chart; parallel agents would fight over it. Never run two tv-operator calls in parallel.
@@ -40,6 +41,7 @@ Workflows are in `.claude/commands/`: `/morning-scan`, `/idea-check`, `/weekly-r
 8. **Every idea is logged** to `journal/ideas.csv` by trade-journal, including ideas the user rejects.
 9. Outputs are research, not investment advice. Say so once per brief, not on every line.
 10. **Pinned scanner version.** tv-operator checks the scanner's `EWS vNN` tag against `config/scanner.yaml` before reading; a mismatch stops the run. Every idea records the scanner version it came from.
+11. **Evidence before scanner changes.** Changes to scores, weights, thresholds or guidelines need an *adopt* verdict from scanner-evaluator before `/pine-change` saves them. Hard rules change only when the user decides, never on statistics alone.
 
 ## Signal classification (default)
 Defined in `config/signal-rules.md`. Change it there, not in agent prompts.
@@ -50,6 +52,8 @@ Defined in `config/signal-rules.md`. Change it there, not in agent prompts.
 - Scanner repo (`../elliott-wave-scanner` by default) — Pine source, CHANGELOG, `docs/RULEBOOK.md`, Python engine `ewscan`; pine-dev edits it, wave-counter reads it
 - `rulebook/` — personal overrides on top of RULEBOOK.md (optional)
 - `journal/ideas.csv` — every idea and its outcome
+- `feedback/log.md` — scanner feedback and its status (scanner-evaluator)
+- `config/eval-set.yaml`, `tools/ews_eval.py`, `data/`, `reports/eval/` — scanner evaluation set, replay tool, price history, results
 - `watchlists/` — saved symbol lists
 - `reports/YYYY-MM-DD-<type>.md` — briefs and reviews
 

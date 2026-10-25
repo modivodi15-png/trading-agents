@@ -5,6 +5,11 @@ argument-hint: "<change, e.g. 'flag expanded flats where C < 100% of A'>"
 
 Scanner change requested: $ARGUMENTS
 
+If the change touches scores, weights, thresholds or guidelines (anything that changes which counts rank
+where), first check `feedback/log.md` / `reports/eval/` for an *adopt* verdict from scanner-evaluator. If
+there is none, stop and suggest `/scanner-feedback test` first. Display-only changes (tables, labels,
+colours, the version tag) and the user's explicit hard-rule decisions don't need one.
+
 1. **pine-dev** — read `config/scanner.yaml`; clone the scanner repo to `repo_path` if missing and create a
    branch. Implement the change, bump `EWS_VER`, update `CHANGELOG.md` (and `docs/RULEBOOK.md` if a rule
    changed), update and test the Python port if the logic changed, write chart test cases, and give
